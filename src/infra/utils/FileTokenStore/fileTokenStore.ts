@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-import sanitize from 'sanitize-filename';
-import { SessionToken, TokenStore } from '../types';
+import { SessionToken, TokenStore } from '../../types/types';
 
 export interface FileTokenStoreOptions {
   decodeFunction: (text: string) => any;

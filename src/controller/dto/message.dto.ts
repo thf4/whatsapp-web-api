@@ -1,16 +1,11 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateSessionDto {
-
-  @IsNotEmpty()
-  @IsString()
-  webhook: string;
-
+export class SendMessageDto {
   @IsOptional()
   @IsString()
   phone_number: string;
 
   @IsNotEmpty()
   @IsString()
-  session_name: string;
+  message: string;
 }

@@ -11,7 +11,7 @@ export class TokenStoreFactory {
   ) { }
 
   public createTokenStore(client: any) {
-    const type = this.configService.get<string>('TOKEN_STORE_TYPE');
+    const type = this.configService.get<string>('token_store.type');
     let tokenStore: DynamoDbTokenStore | FileTokenStore;
 
     if (type === 'dynamodb') {

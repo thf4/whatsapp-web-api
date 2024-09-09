@@ -1,5 +1,5 @@
 export type ICreateSessionInput = {
-  webHook: string;
+  webhook: string;
   phone_number: string;
   session_name: string;
 }
