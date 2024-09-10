@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { } from '@wppconnect-team/wppconnect';
+import * as fs from 'fs';
+import * as path from 'path';
+
 @Injectable()
 export class MessagesService {
 
@@ -11,7 +13,8 @@ export class MessagesService {
     const { message, phone_number } = payload;
     const client = this.sessionService.getClient(session);
 
-    const result = await client.sendText(`${phone_number}@c.us`, message);
+    await client.startTyping(phone_number, 5000);
+    const result = await client.sendText(`${phone_number}@c.us`, message, { delay: 1000 });
 
     return result;
   }
@@ -20,7 +23,8 @@ export class MessagesService {
     const { phone_number, audio } = payload;
     const client = this.sessionService.getClient(session);
 
-    const result = await client.sendPttFromBase64(`${phone_number}@c.us`,audio, 'Voice Audio');
+    await client.startTyping(phone_number, 5000);
+    const result = await client.sendPttFromBase64(`${phone_number}@c.us`, audio, 'Audio Voice');
 
     return result;
   }

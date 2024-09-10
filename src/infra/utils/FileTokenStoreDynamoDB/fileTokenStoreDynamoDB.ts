@@ -5,11 +5,8 @@ import {
   GetCommandInput,
   PutCommand,
   ScanCommand,
-  UpdateCommand,
-  UpdateCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 import { Inject, Injectable } from "@nestjs/common";
-import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 
 @Injectable()
 export class DynamoDbTokenStore {
@@ -60,7 +57,7 @@ export class DynamoDbTokenStore {
   async removeToken(session_name: string): Promise<boolean> {
     const params = {
       TableName: this.tableName,
-      Key: marshall({ session_name })
+      Key: { session_name }
     };
 
     try {
@@ -79,7 +76,7 @@ export class DynamoDbTokenStore {
 
     try {
       const result = await this.client.send(new ScanCommand(params));
-      return result.Items.map(item => unmarshall(item).session_name);
+      return result.Items.map(item => item.session_name);
     } catch (error) {
       console.error('Error listing tokens:', error);
       return [];

@@ -8,6 +8,7 @@ import EventEmitter from 'events';
 import { UtilsService } from './functions';
 import { ConfigService } from '@nestjs/config';
 import configuration from '../config/configuration';
+import { mapWppConnectToCallback } from '../utils/mapper/onmessage.mapper';
 
 
 export let clientsArray: Whatsapp[] = [];
@@ -45,7 +46,9 @@ export class SessionService implements OnModuleInit {
       const myTokenStore = tokenStore.createTokenStore(client);
       const tokenData = await myTokenStore.getToken(session);
 
-      myTokenStore.setToken(session, tokenData ?? client.config);
+      if (!tokenData) {
+        myTokenStore.setToken(session, tokenData ?? client.config);
+      }
 
       if (!client?.config?.webhook && tokenData) {
         client.config = tokenData;
@@ -64,17 +67,17 @@ export class SessionService implements OnModuleInit {
           deviceName:
             client.config.phone_number == undefined
               ? client.config?.deviceName ||
-              'WppConnect'
+              'Smartime.AI'
               : undefined,
           poweredBy:
             client.config.phone_number == undefined
               ? client.config?.poweredBy ||
-              'WPPConnect-Server'
+              'Smartime.AI-Server'
               : undefined,
           catchLinkCode: (code: string) => {
             this.exportPhoneCode(client.config.phone_number, code, client, res);
           },
-          catchQR: (base64Qr, asciiQR, attempt, urlCode) => {
+          catchQR: (base64Qr: any, asciiQR: any, attempt: any, urlCode: any) => {
             this.exportQR(base64Qr, urlCode, client, res);
           },
           statusFind: async (statusFind: string) => {
@@ -242,7 +245,8 @@ export class SessionService implements OnModuleInit {
   async listenMessages(client: WhatsAppServer) {
     client.onMessage(async (message: any) => {
       eventEmitter.emit(`mensagem-${client.session}`, client, message);
-      await this.utilsService.callWebHook(client, 'onmessage', message);
+      const mappedMessage = mapWppConnectToCallback(message);
+      await this.utilsService.callWebHook(client, 'onmessage', mappedMessage);
       if (message.type === 'location') {
         client.onLiveLocation(message.sender.id, (location: any) => {
           this.utilsService.callWebHook(client, 'location', location);

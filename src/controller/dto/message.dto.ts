@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBase64, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SendMessageDto {
   @IsOptional()
@@ -8,4 +8,14 @@ export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
   message: string;
+}
+
+export class SendMessageAudioDto {
+  @IsOptional()
+  @IsString()
+  phone_number: string;
+
+  @IsNotEmpty()
+  @IsString()
+  audio: string;
 }
