@@ -14,13 +14,15 @@ export const mapWppConnectToCallback = (data: any): any => {
     isAvatar: data.isAvatar,
     isNewMsg: data.isNewMsg,
     audio: {
-      audioUrl: data.deprecatedMms3Url || data.clientUrl,
+      deprecatedMms3Url: data.deprecatedMms3Url || data.clientUrl,
       mimetype: data.mimetype,
+      type: data.type,
       size: data.size,
-      mediaKey: data.mediaKey
+      mediaKey: data.mediaKey,
+      filehash: data.filehash,
     },
     momment: data.timestamp,
-    status: "RECEIVED",
+    status: 'RECEIVED',
     chatName: data.notifyName || data.sender.pushname,
     senderPhoto: data.sender.profilePicThumbObj?.eurl || null,
     senderName: data.sender.pushname,
@@ -34,7 +36,7 @@ export const mapWppConnectToCallback = (data: any): any => {
     isMe: data.sender.isMe,
     isUser: data.isUser,
     text: {
-      message: data.body
-    }
+      message: data.body,
+    },
   };
-}
+};

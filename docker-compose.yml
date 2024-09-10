@@ -1,0 +1,19 @@
+services:
+  whatsapp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: whatsapp
+    image: thalesfarias/whatsapp
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - workflow-network
+networks:
+  workflow-network:
+    driver: bridge
