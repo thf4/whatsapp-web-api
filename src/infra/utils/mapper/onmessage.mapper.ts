@@ -13,14 +13,16 @@ export const mapWppConnectToCallback = (data: any): any => {
     viewed: data.viewed,
     isAvatar: data.isAvatar,
     isNewMsg: data.isNewMsg,
-    audio: {
-      deprecatedMms3Url: data.deprecatedMms3Url || data.clientUrl,
-      mimetype: data.mimetype,
-      type: data.type,
-      size: data.size,
-      mediaKey: data.mediaKey,
-      filehash: data.filehash,
-    },
+    audio: data.deprecatedMms3Url
+      ? {
+          deprecatedMms3Url: data.deprecatedMms3Url || data.clientUrl,
+          mimetype: data.mimetype,
+          type: data.type,
+          size: data.size,
+          mediaKey: data.mediaKey,
+          filehash: data.filehash,
+        }
+      : null,
     momment: data.timestamp,
     status: 'RECEIVED',
     chatName: data.notifyName || data.sender.pushname,

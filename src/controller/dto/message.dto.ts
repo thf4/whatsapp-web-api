@@ -1,4 +1,4 @@
-import { IsBase64, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class SendMessageDto {
   @IsOptional()

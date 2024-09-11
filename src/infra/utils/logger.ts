@@ -1,4 +1,3 @@
-
 import winston from 'winston';
 
 // Use JSON logging for log files
@@ -7,7 +6,7 @@ import winston from 'winston';
 const jsonLogFileFormat = winston.format.combine(
   winston.format.errors({ stack: true }),
   winston.format.timestamp(),
-  winston.format.prettyPrint()
+  winston.format.prettyPrint(),
 );
 
 export function createLogger(options: any) {
@@ -32,9 +31,9 @@ export function createLogger(options: any) {
               return `${level}: ${timestamp} ${message} - ${stack}`;
             }
             return `${level}: ${timestamp} ${message}`;
-          })
+          }),
         ),
-      })
+      }),
     );
   }
   if (options.logger.indexOf('file') > -1) {
@@ -44,7 +43,7 @@ export function createLogger(options: any) {
         level: log_level,
         maxsize: 10485760,
         maxFiles: 3,
-      })
+      }),
     );
   }
 
