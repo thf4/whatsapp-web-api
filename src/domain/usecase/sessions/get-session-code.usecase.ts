@@ -3,7 +3,7 @@ import { SessionService } from '../../../infra/service/session.service';
 
 @Injectable()
 export class GetSessionCodeUseCase {
-  constructor(private readonly sessionService: SessionService) { }
+  constructor(private readonly sessionService: SessionService) {}
 
   async execute(sessionId: string): Promise<any> {
     const session = await this.sessionService.getSessionCode(sessionId);

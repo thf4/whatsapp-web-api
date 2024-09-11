@@ -8,7 +8,7 @@ export class TokenStoreFactory {
   constructor(
     private configService: ConfigService,
     private dynamoDbTokenStore: DynamoDbTokenStore,
-  ) { }
+  ) {}
 
   public createTokenStore(client: any) {
     const type = this.configService.get<string>('token_store.type');

@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   CreateBucketCommand,
   PutObjectCommand,
@@ -22,9 +19,13 @@ const config = configuration();
 export class UtilsService {
   private readonly logger = new Logger(UtilsService.name);
 
-  constructor() { }
+  constructor() {}
 
-  contactToArray(number: string | string[], isGroup = false, isNewsletter = false): string[] {
+  contactToArray(
+    number: string | string[],
+    isGroup = false,
+    isNewsletter = false,
+  ): string[] {
     const localArr: string[] = [];
     if (Array.isArray(number)) {
       for (let contact of number) {
@@ -67,9 +68,13 @@ export class UtilsService {
       if (config.webhook.autoDownload) await this.autoDownload(client, data);
 
       try {
-        const chatId = data.from || data.chatId || (data.chatId ? data.chatId._serialized : null);
+        const chatId =
+          data.from ||
+          data.chatId ||
+          (data.chatId ? data.chatId._serialized : null);
         data = { event, session: client.session, ...data };
-        if (config.mapper.enable) data = await convert(config.mapper.prefix, data);
+        if (config.mapper.enable)
+          data = await convert(config.mapper.prefix, data);
 
         await axios.post(webhook, data);
 
@@ -103,7 +108,10 @@ export class UtilsService {
 
           const fileName = `${config.aws_s3.defaultBucketName ? client.session + '/' : ''}${hashName}.${mimetypes.extension(message.mimetype)}`;
 
-          if (!config.aws_s3.defaultBucketName && !(await bucketAlreadyExists(bucketName))) {
+          if (
+            !config.aws_s3.defaultBucketName &&
+            !(await bucketAlreadyExists(bucketName))
+          ) {
             await this.createS3Bucket(s3Client, bucketName);
           }
 
@@ -114,7 +122,7 @@ export class UtilsService {
               Body: buffer,
               ContentType: message.mimetype,
               ACL: 'public-read',
-            })
+            }),
           );
 
           message.fileUrl = `https://${bucketName}.s3.amazonaws.com/${fileName}`;
@@ -136,14 +144,29 @@ export class UtilsService {
   }
 
   // Additional utility methods for private usage
-  private formatContact(contact: string, isGroup: boolean, isNewsletter: boolean): string | null {
-    contact = isGroup || isNewsletter ? contact.split('@')[0] : contact.split('@')[0]?.replace(/[^\w ]/g, '');
+  private formatContact(
+    contact: string,
+    isGroup: boolean,
+    isNewsletter: boolean,
+  ): string | null {
+    contact =
+      isGroup || isNewsletter
+        ? contact.split('@')[0]
+        : contact.split('@')[0]?.replace(/[^\w ]/g, '');
     if (!contact) return null;
-    return isGroup ? `${contact}@g.us` : isNewsletter ? `${contact}@newsletter` : `${contact}@c.us`;
+    return isGroup
+      ? `${contact}@g.us`
+      : isNewsletter
+        ? `${contact}@newsletter`
+        : `${contact}@c.us`;
   }
 
   private shouldIgnoreWebhook(event: string, data: any): boolean {
-    return config.webhook.ignore.includes(event) || config.webhook.ignore.includes(data.from) || config.webhook.ignore.includes(data.type);
+    return (
+      config.webhook.ignore.includes(event) ||
+      config.webhook.ignore.includes(data.from) ||
+      config.webhook.ignore.includes(data.type)
+    );
   }
 
   private shouldMarkAsRead(event: string): boolean {
@@ -152,12 +175,22 @@ export class UtilsService {
   }
 
   private normalizeBucketName(bucketName: string): string {
-    bucketName = bucketName.normalize('NFD').replace(/[\u0300-\u036f]|[— _.,?!]/g, '').toLowerCase();
-    return bucketName.length < 3 ? `${bucketName}${Math.floor(Math.random() * 900) + 100}` : bucketName;
+    bucketName = bucketName
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]|[— _.,?!]/g, '')
+      .toLowerCase();
+    return bucketName.length < 3
+      ? `${bucketName}${Math.floor(Math.random() * 900) + 100}`
+      : bucketName;
   }
 
   private async createS3Bucket(s3Client: S3Client, bucketName: string) {
-    await s3Client.send(new CreateBucketCommand({ Bucket: bucketName, ObjectOwnership: 'ObjectWriter' }));
+    await s3Client.send(
+      new CreateBucketCommand({
+        Bucket: bucketName,
+        ObjectOwnership: 'ObjectWriter',
+      }),
+    );
     await s3Client.send(
       new PutPublicAccessBlockCommand({
         Bucket: bucketName,
@@ -166,7 +199,7 @@ export class UtilsService {
           IgnorePublicAcls: false,
           BlockPublicPolicy: false,
         },
-      })
+      }),
     );
   }
 

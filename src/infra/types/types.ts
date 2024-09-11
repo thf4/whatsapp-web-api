@@ -21,7 +21,7 @@ export interface TokenStore<T extends SessionToken = SessionToken> {
    */
   setToken(
     sessionName: string,
-    tokenData: T | null
+    tokenData: T | null,
   ): Promise<boolean> | boolean;
 
   /**
@@ -36,7 +36,6 @@ export interface TokenStore<T extends SessionToken = SessionToken> {
    */
   listTokens(): Promise<string[]> | string[];
 }
-
 
 export interface ServerOptions {
   secretKey: string;

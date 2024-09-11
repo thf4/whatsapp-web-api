@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  OnModuleInit,
+} from '@nestjs/common';
 import { create, SocketState, Whatsapp } from '@wppconnect-team/wppconnect';
 import { Request } from 'express';
 
@@ -10,9 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import configuration from '../config/configuration';
 import { mapWppConnectToCallback } from '../utils/mapper/onmessage.mapper';
 
-
-export let clientsArray: Whatsapp[] = [];
-export let clientsCode: any[] = [];
+export const clientsArray: Whatsapp[] = [];
+export const clientsCode: any[] = [];
 export const sessions = [];
 export const eventEmitter = new EventEmitter();
 
@@ -22,19 +26,21 @@ export class SessionService implements OnModuleInit {
   constructor(
     private readonly utilsService: UtilsService,
     private readonly tokenStoreFactory: TokenStoreFactory,
-    private configService: ConfigService
-  ) { };
+    private configService: ConfigService,
+  ) {}
 
   async onModuleInit() {
     const allSessions = await this.getAllTokens();
-    allSessions.map(async (session: string) => await this.opendata({}, session));
+    allSessions.map(
+      async (session: string) => await this.opendata({}, session),
+    );
   }
 
   async createSessionUtil(
     payload: any,
     clientsArray: any,
     session: string,
-    res?: any
+    res?: any,
   ) {
     try {
       let client = this.getClient(session) as any;
@@ -54,55 +60,72 @@ export class SessionService implements OnModuleInit {
         client.config = tokenData;
       }
 
-      const wppClient = await create(Object.assign(
-        {},
-        { tokenStore: myTokenStore },
-        {},
-        {
-          folderNameToken: 'userDataDir',
-          session: session,
-          logQR: false,
-          phoneNumber: client.config.phone_number ?? null,
-          browserArgs: configuration().createOptions.browserArgs,
-          deviceName:
-            client.config.phone_number == undefined
-              ? client.config?.deviceName ||
-              'Smartime.AI'
-              : undefined,
-          poweredBy:
-            client.config.phone_number == undefined
-              ? client.config?.poweredBy ||
-              'Smartime.AI-Server'
-              : undefined,
-          catchLinkCode: (code: string) => {
-            this.exportPhoneCode(client.config.phone_number, code, client, res);
-          },
-          catchQR: (base64Qr: any, asciiQR: any, attempt: any, urlCode: any) => {
-            this.exportQR(base64Qr, urlCode, client, res);
-          },
-          statusFind: async (statusFind: string) => {
-            try {
-              eventEmitter.emit(`status-${client.session}`, client, statusFind);
-              if (
-                statusFind === 'autocloseCalled' ||
-                statusFind === 'desconnectedMobile'
-              ) {
-                client.status = 'CLOSED';
-                client.qrcode = null;
-                client.phoneCode = null;
-                await client.close();
-                clientsArray[session] = undefined;
+      const wppClient = await create(
+        Object.assign(
+          { tokenStore: myTokenStore },
+          {},
+          {
+            sessionStorage: '',
+            folderNameToken: 'userDataDir',
+            session: session,
+            logQR: false,
+            phoneNumber: client.config.phone_number ?? null,
+            browserArgs: configuration().createOptions.browserArgs,
+            deviceName:
+              client.config.phone_number == undefined
+                ? client.config?.deviceName || 'Smartime.AI'
+                : undefined,
+            poweredBy:
+              client.config.phone_number == undefined
+                ? client.config?.poweredBy || 'Smartime.AI-Server'
+                : undefined,
+            catchLinkCode: (code: string) => {
+              this.exportPhoneCode(
+                client.config.phone_number,
+                code,
+                client,
+                res,
+              );
+            },
+            catchQR: (
+              base64Qr: any,
+              _asciiQR: any,
+              _attempt: any,
+              urlCode: any,
+            ) => {
+              this.exportQR(base64Qr, urlCode, client, res);
+            },
+            statusFind: async (statusFind: string) => {
+              try {
+                eventEmitter.emit(
+                  `status-${client.session}`,
+                  client,
+                  statusFind,
+                );
+                if (
+                  statusFind === 'autocloseCalled' ||
+                  statusFind === 'desconnectedMobile'
+                ) {
+                  client.status = 'CLOSED';
+                  client.qrcode = null;
+                  client.phoneCode = null;
+                  await client.close();
+                  clientsArray[session] = undefined;
+                }
+                await this.utilsService.callWebHook(client, 'status-find', {
+                  status: statusFind,
+                  session: client.session,
+                });
+                this.logger.log(statusFind + '\n\n');
+              } catch (error) {
+                this.logger.error(error);
               }
-              await this.utilsService.callWebHook(client, 'status-find', {
-                status: statusFind,
-                session: client.session,
-              });
-              this.logger.log(statusFind + '\n\n');
-            } catch (error) {
-              this.logger.error(error);
-            }
+            },
           },
-        })).catch(error => { throw error; });
+        ),
+      ).catch((error) => {
+        throw error;
+      });
 
       client = clientsArray[session] = Object.assign(wppClient, client);
       await this.start(payload, client);
@@ -141,7 +164,7 @@ export class SessionService implements OnModuleInit {
     phone: any,
     phoneCode: any,
     client: WhatsAppServer,
-    res?: any
+    res?: any,
   ) {
     eventEmitter.emit(`phoneCode-${client.session}`, phoneCode, client);
 
@@ -173,15 +196,10 @@ export class SessionService implements OnModuleInit {
       });
     }
 
-    return phoneCode
+    return phoneCode;
   }
 
-  exportQR(
-    qrCode: any,
-    urlCode: any,
-    client: WhatsAppServer,
-    res?: any
-  ) {
+  exportQR(qrCode: any, urlCode: any, client: WhatsAppServer, res?: any) {
     eventEmitter.emit(`qrcode-${client.session}`, qrCode, urlCode, client);
     Object.assign(client, {
       status: 'QRCODE',
@@ -215,7 +233,7 @@ export class SessionService implements OnModuleInit {
     });
   }
 
-  async start(req: Request, client: WhatsAppServer) {
+  async start(_req: Request, client: WhatsAppServer) {
     try {
       await client.isConnected();
       Object.assign(client, { status: 'CONNECTED', qrcode: null, code: null });
@@ -267,14 +285,22 @@ export class SessionService implements OnModuleInit {
 
   async onPresenceChanged(client: WhatsAppServer) {
     client.onPresenceChanged(async (presenceChangedEvent: any) => {
-      await this.utilsService.callWebHook(client, 'onpresencechanged', presenceChangedEvent);
+      await this.utilsService.callWebHook(
+        client,
+        'onpresencechanged',
+        presenceChangedEvent,
+      );
     });
   }
 
   async onReactionMessage(client: WhatsAppServer) {
     await client.isConnected();
     client.onReactionMessage(async (reaction: any) => {
-      await this.utilsService.callWebHook(client, 'onreactionmessage', reaction);
+      await this.utilsService.callWebHook(
+        client,
+        'onreactionmessage',
+        reaction,
+      );
     });
   }
 
@@ -338,12 +364,18 @@ export class SessionService implements OnModuleInit {
     const token = this.getClient(session) as any;
 
     if (token && !token.code) {
-      return token?.status
+      return token?.status;
     }
 
     if (!token.code) {
-      throw new BadRequestException(`Session code not exists for this session : ${session}`)
+      throw new BadRequestException(
+        `Session code not exists for this session : ${session}`,
+      );
     }
     return token.code;
+  }
+
+  deleteSessionOnArray(session: string): void {
+    delete clientsArray[session];
   }
 }

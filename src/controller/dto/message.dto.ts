@@ -8,6 +8,10 @@ export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
   message: string;
+
+  @IsOptional()
+  @IsString()
+  delay: string;
 }
 
 export class SendMessageAudioDto {
@@ -18,4 +22,8 @@ export class SendMessageAudioDto {
   @IsNotEmpty()
   @IsString()
   audio: string;
+
+  @IsOptional()
+  @IsString()
+  delay: string;
 }

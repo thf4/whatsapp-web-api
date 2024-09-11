@@ -5,13 +5,26 @@ import { LoggerModule } from 'nestjs-pino';
 import configuration from './infra/config/configuration';
 
 @Module({
-  imports: [ControllerModule,
+  imports: [
+    ControllerModule,
     ConfigModule.forRoot({
-    load: [configuration],
-    isGlobal: true,
-  }),
-    LoggerModule.forRoot(),],
+      load: [configuration],
+      isGlobal: true,
+    }),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: true,
+            singleLine: false,
+          },
+        },
+      },
+    }),
+  ],
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

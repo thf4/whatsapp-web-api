@@ -14,11 +14,11 @@ export default () => ({
     defaultBucketName: process.env.BUCKET_NAME,
   },
   token_store: {
-    type: process.env.TOKEN_STORE_TYPE
+    type: process.env.TOKEN_STORE_TYPE,
   },
   mapper: {
     enable: process.env.MAPPER_ENABLED,
-    prefix: process.env.MAPPER_PREFIX
+    prefix: process.env.MAPPER_PREFIX,
   },
   secretKey: 'THISISMYSECURETOKEN',
   host: 'http://localhost',
@@ -62,5 +62,5 @@ export default () => ({
       '--ignore-ssl-errors',
       '--ignore-certificate-errors-spki-list',
     ],
-  }
+  },
 });

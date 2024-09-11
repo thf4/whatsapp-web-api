@@ -14,11 +14,11 @@ export class BusinessDto {
 
 @Injectable()
 export class PaginationTransformPipe implements PipeTransform {
-    async transform(dto: BusinessDto, { metatype }: ArgumentMetadata) {
-        if (!metatype) {
-            return dto;
-        }
-
-        return plainToInstance(metatype, dto);
+  async transform(dto: BusinessDto, { metatype }: ArgumentMetadata) {
+    if (!metatype) {
+      return dto;
     }
+
+    return plainToInstance(metatype, dto);
+  }
 }

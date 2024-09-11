@@ -6,9 +6,11 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 @Module({
-  imports: [ConfigModule,],
+  imports: [ConfigModule],
   exports: [TokenStoreFactory, DynamoDbTokenStore, 'DYNAMODB'],
-  providers: [TokenStoreFactory, DynamoDbTokenStore, 
+  providers: [
+    TokenStoreFactory,
+    DynamoDbTokenStore,
     {
       provide: 'DYNAMODB',
       useFactory: () => {
@@ -19,9 +21,9 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
             secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
           },
         });
-        return DynamoDBDocumentClient.from(client); // Usa o DynamoDBDocumentClient para trabalhar com JSON
+        return DynamoDBDocumentClient.from(client);
       },
     },
   ],
 })
-export class UtilsModule { }
+export class UtilsModule {}

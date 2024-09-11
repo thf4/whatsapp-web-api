@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { SessionService } from './session.service';
-import { } from '@wppconnect-team/wppconnect';
+import {} from '@wppconnect-team/wppconnect';
 @Injectable()
 export class BusinessService {
   private readonly logger: Logger;
@@ -15,5 +15,4 @@ export class BusinessService {
 
     return result;
   }
-
 }

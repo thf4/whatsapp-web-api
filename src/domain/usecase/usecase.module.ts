@@ -9,7 +9,21 @@ import { SendMessageAudioUseCase } from './messages/send-audio.usecase';
 
 @Module({
   imports: [ServiceModule],
-  exports: [CreateSessionUseCase, GetSessionCodeUseCase, StartAllSessionsUseCase, SendMessageUseCase, GetProducstUseCase, SendMessageAudioUseCase],
-  providers: [CreateSessionUseCase, GetSessionCodeUseCase, StartAllSessionsUseCase, SendMessageUseCase, GetProducstUseCase, SendMessageAudioUseCase],
+  exports: [
+    CreateSessionUseCase,
+    GetSessionCodeUseCase,
+    StartAllSessionsUseCase,
+    SendMessageUseCase,
+    GetProducstUseCase,
+    SendMessageAudioUseCase,
+  ],
+  providers: [
+    CreateSessionUseCase,
+    GetSessionCodeUseCase,
+    StartAllSessionsUseCase,
+    SendMessageUseCase,
+    GetProducstUseCase,
+    SendMessageAudioUseCase,
+  ],
 })
-export class UseCaseModule { }
+export class UseCaseModule {}

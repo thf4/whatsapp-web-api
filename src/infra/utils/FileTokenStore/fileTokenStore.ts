@@ -132,7 +132,9 @@ export class FileTokenStore implements TokenStore {
       let files = await fs.promises.readdir(this.options.path);
 
       files = files.filter((file) => file.endsWith(this.options.fileExtension));
-      files = files.map((file) => path.basename(file, this.options.fileExtension));
+      files = files.map((file) =>
+        path.basename(file, this.options.fileExtension),
+      );
 
       return files;
     } catch (error) {

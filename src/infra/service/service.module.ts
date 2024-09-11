@@ -9,7 +9,19 @@ import { BusinessService } from './business.service';
 
 @Module({
   imports: [ConfigModule, UtilsModule],
-  exports: [DynamoDbTokenStoreService, SessionService, UtilsService, MessagesService, BusinessService],
-  providers: [DynamoDbTokenStoreService, SessionService, UtilsService, MessagesService, BusinessService],
+  exports: [
+    DynamoDbTokenStoreService,
+    SessionService,
+    UtilsService,
+    MessagesService,
+    BusinessService,
+  ],
+  providers: [
+    DynamoDbTokenStoreService,
+    SessionService,
+    UtilsService,
+    MessagesService,
+    BusinessService,
+  ],
 })
-export class ServiceModule { }
+export class ServiceModule {}

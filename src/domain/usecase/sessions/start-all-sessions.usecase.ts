@@ -4,13 +4,14 @@ import { Request } from 'express';
 
 @Injectable()
 export class StartAllSessionsUseCase {
-  constructor(private readonly sessionUtils: SessionService,
-  ) { }
+  constructor(private readonly sessionUtils: SessionService) {}
   async execute(req: Request, res: Response) {
-
     const allSessions = await this.sessionUtils.getAllTokens();
 
-    allSessions.map(async (session: string) => await this.sessionUtils.opendata(req as any, session));
+    allSessions.map(
+      async (session: string) =>
+        await this.sessionUtils.opendata(req as any, session),
+    );
 
     return res;
   }
